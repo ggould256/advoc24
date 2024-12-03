@@ -2,7 +2,7 @@ use std::collections::{HashMap, HashSet};
 use std::iter::zip;
 use std::vec::Vec;
 
-use crate::parsing::{read_all_records, parse_as_ii};
+use crate::parsing::{parse_as_ii, read_all_records};
 
 fn sorted_error_sum(records: Vec<(i32, i32)>) -> i32 {
     let mut result = 0;
@@ -53,29 +53,21 @@ mod tests {
 
     #[test]
     fn test_example_1() {
-        let example_records = read_all_records(Some("data/day1_example.txt".to_string()));
-        let result = sorted_error_sum(parse_as_ii(example_records));
-        assert_eq!(result, 11);
+        assert_eq!(day1(Some("data/day1_example.txt".to_string())), 11);
     }
 
     #[test]
     fn test_test_1() {
-        let example_records = read_all_records(Some("data/day1_test.txt".to_string()));
-        let result = sorted_error_sum(parse_as_ii(example_records));
-        assert_eq!(result, 1319616);
+        assert_eq!(day1(Some("data/day1_test.txt".to_string())), 1319616);
     }
 
     #[test]
     fn test_example_1b() {
-        let example_records = read_all_records(Some("data/day1_example.txt".to_string()));
-        let result = similarity_score(parse_as_ii(example_records));
-        assert_eq!(result, 31);
+        assert_eq!(day1b(Some("data/day1_example.txt".to_string())), 31);
     }
 
     #[test]
     fn test_test_1b() {
-        let example_records = read_all_records(Some("data/day1_test.txt".to_string()));
-        let result = similarity_score(parse_as_ii(example_records));
-        assert_eq!(result, 27267728);
+        assert_eq!(day1b(Some("data/day1_test.txt".to_string())), 27267728);
     }
 }

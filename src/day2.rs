@@ -1,27 +1,28 @@
-use crate::parsing::{read_all_records, parse_as_i32s};
+use crate::parsing::{parse_as_i32s, read_all_records};
 
-fn record_is_safe(record: &Vec<i32>) -> bool {
-    let differences: Vec<i32> =
-        (0..record.len()-1).map(|i| record[i+1] - record[i]).collect();
+fn record_is_safe(record: &[i32]) -> bool {
+    let differences: Vec<i32> = (0..record.len() - 1)
+        .map(|i| record[i + 1] - record[i])
+        .collect();
     // Ascending or descending.
     if differences.iter().all(|&diff| diff > 0) || differences.iter().all(|&diff| diff < 0) {
         // Bounded.
-        if differences.iter().all(|&diff| -3 <= diff && diff <= 3) {
+        if differences.iter().all(|&diff| (-3..=3).contains(&diff)) {
             return true;
         }
     }
     false
 }
 
-fn record_is_kinda_safe(record: &Vec<i32>) -> bool {
-    let mut possible_safe_sequences: Vec<Vec<i32>> = vec![record.clone()];
+fn record_is_kinda_safe(record: &[i32]) -> bool {
+    let mut possible_safe_sequences: Vec<Vec<i32>> = vec![record.to_owned()];
     for i in 0..record.len() {
         let mut short_record = Vec::new();
         short_record.extend(record[0..i].iter());
-        short_record.extend(record[i+1..record.len()].iter());
+        short_record.extend(record[i + 1..record.len()].iter());
         possible_safe_sequences.push(short_record);
     }
-    possible_safe_sequences.iter().any(record_is_safe)
+    possible_safe_sequences.iter().any(|r| record_is_safe(r))
 }
 
 fn total_safe(records: Vec<Vec<i32>>) -> i32 {
@@ -45,17 +46,14 @@ fn total_kinda_safe(records: Vec<Vec<i32>>) -> i32 {
 }
 
 pub fn day2(source: Option<String>) -> i32 {
-    let records = parse_as_i32s(
-        read_all_records(source));
+    let records = parse_as_i32s(read_all_records(source));
     total_safe(records)
 }
 
 pub fn day2b(source: Option<String>) -> i32 {
-    let records = parse_as_i32s(
-        read_all_records(source));
+    let records = parse_as_i32s(read_all_records(source));
     total_kinda_safe(records)
 }
-
 
 #[cfg(test)]
 mod tests {
