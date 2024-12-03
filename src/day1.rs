@@ -38,15 +38,13 @@ fn similarity_score(records: Vec<(i32, i32)>) -> i32 {
 pub fn day1(source: Option<String>) -> i32 {
     let records = read_all_records(source);
     let parsed = parse_as_ii(records);
-    let result = sorted_error_sum(parsed);
-    result
+    sorted_error_sum(parsed)
 }
 
 pub fn day1b(source: Option<String>) -> i32 {
     let records = read_all_records(source);
     let parsed = parse_as_ii(records);
-    let result = similarity_score(parsed);
-    result
+    similarity_score(parsed)
 }
 
 #[cfg(test)]
