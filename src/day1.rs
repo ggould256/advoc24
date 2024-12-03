@@ -1,5 +1,4 @@
 use std::collections::{HashMap, HashSet};
-use std::io;
 use std::iter::zip;
 use std::vec::Vec;
 
@@ -36,15 +35,15 @@ fn similarity_score(records: Vec<(i32, i32)>) -> i32 {
     result
 }
 
-pub fn day1() -> i32 {
-    let records = read_all_records(io::stdin().lock());
+pub fn day1(source: Option<String>) -> i32 {
+    let records = read_all_records(source);
     let parsed = parse_as_ii(records);
     let result = sorted_error_sum(parsed);
     result
 }
 
-pub fn day1b() -> i32 {
-    let records = read_all_records(io::stdin().lock());
+pub fn day1b(source: Option<String>) -> i32 {
+    let records = read_all_records(source);
     let parsed = parse_as_ii(records);
     let result = similarity_score(parsed);
     result
@@ -52,43 +51,32 @@ pub fn day1b() -> i32 {
 
 #[cfg(test)]
 mod tests {
-    use io::BufReader;
-    use std::fs::File;
-
     use super::*;
 
     #[test]
     fn test_example_1() {
-        let f = File::open("data/day1_example.txt").unwrap();
-        let reader = BufReader::new(f);
-        let example_records = read_all_records(reader);
+        let example_records = read_all_records(Some("data/day1_example.txt".to_string()));
         let result = sorted_error_sum(parse_as_ii(example_records));
         assert_eq!(result, 11);
     }
 
     #[test]
     fn test_test_1() {
-        let f = File::open("data/day1_test.txt").unwrap();
-        let reader = BufReader::new(f);
-        let example_records = read_all_records(reader);
+        let example_records = read_all_records(Some("data/day1_test.txt".to_string()));
         let result = sorted_error_sum(parse_as_ii(example_records));
         assert_eq!(result, 1319616);
     }
 
     #[test]
     fn test_example_1b() {
-        let f = File::open("data/day1_example.txt").unwrap();
-        let reader = BufReader::new(f);
-        let example_records = read_all_records(reader);
+        let example_records = read_all_records(Some("data/day1_example.txt".to_string()));
         let result = similarity_score(parse_as_ii(example_records));
         assert_eq!(result, 31);
     }
 
     #[test]
     fn test_test_1b() {
-        let f = File::open("data/day1_test.txt").unwrap();
-        let reader = BufReader::new(f);
-        let example_records = read_all_records(reader);
+        let example_records = read_all_records(Some("data/day1_test.txt".to_string()));
         let result = similarity_score(parse_as_ii(example_records));
         assert_eq!(result, 27267728);
     }

@@ -1,8 +1,6 @@
-use std::io;
-
 use crate::parsing::{read_all_records, parse_as_i32s};
 
-fn record_is_safe(record: Vec<i32>) -> bool {
+fn record_is_safe(record: &Vec<i32>) -> bool {
     let differences: Vec<i32> =
         (0..record.len()-1).map(|i| record[i+1] - record[i]).collect();
     // Ascending or descending.
@@ -15,50 +13,71 @@ fn record_is_safe(record: Vec<i32>) -> bool {
     false
 }
 
+fn record_is_kinda_safe(record: &Vec<i32>) -> bool {
+    let mut possible_safe_sequences: Vec<Vec<i32>> = vec![record.clone()];
+    for i in 0..record.len() {
+        let mut short_record = Vec::new();
+        short_record.extend(record[0..i].iter());
+        short_record.extend(record[i+1..record.len()].iter());
+        possible_safe_sequences.push(short_record);
+    }
+    possible_safe_sequences.iter().any(record_is_safe)
+}
+
 fn total_safe(records: Vec<Vec<i32>>) -> i32 {
     let mut result = 0;
     for record in records {
-        if record_is_safe(record) {
+        if record_is_safe(&record) {
             result += 1;
         }
     }
     result
 }
 
-pub fn day2() -> i32 {
+fn total_kinda_safe(records: Vec<Vec<i32>>) -> i32 {
+    let mut result = 0;
+    for record in records {
+        if record_is_kinda_safe(&record) {
+            result += 1;
+        }
+    }
+    result
+}
+
+pub fn day2(source: Option<String>) -> i32 {
     let records = parse_as_i32s(
-        read_all_records(io::stdin().lock()));
+        read_all_records(source));
     total_safe(records)
 }
 
-pub fn day2b() -> i32 {
-    let result = 0;
-    result
+pub fn day2b(source: Option<String>) -> i32 {
+    let records = parse_as_i32s(
+        read_all_records(source));
+    total_kinda_safe(records)
 }
 
 
 #[cfg(test)]
 mod tests {
-    use io::BufReader;
-    use std::fs::File;
-
     use super::*;
 
     #[test]
     fn test_example() {
-        let f = File::open("data/day2_example.txt").unwrap();
-        let reader = BufReader::new(f);
-        let example_records = read_all_records(reader);
-        let result = total_safe(parse_as_i32s(example_records));
-        assert_eq!(result, 2);
+        assert_eq!(day2(Some("data/day2_example.txt".to_string())), 2);
     }
 
     #[test]
     fn test_test() {
-        let f = File::open("data/day2_test.txt").unwrap();
-        let reader = BufReader::new(f);
-        let example_records = read_all_records(reader);
-        let result = total_safe(parse_as_i32s(example_records));
-        assert_eq!(result, 516);
+        assert_eq!(day2(Some("data/day2_test.txt".to_string())), 516);
+    }
+
+    #[test]
+    fn test_example_b() {
+        assert_eq!(day2b(Some("data/day2_example.txt".to_string())), 4);
+    }
+
+    #[test]
+    fn test_test_b() {
+        assert_eq!(day2b(Some("data/day2_test.txt".to_string())), 561);
     }
 }

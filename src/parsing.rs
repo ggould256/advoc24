@@ -1,6 +1,14 @@
-use std::io::BufRead;
+use std::{fs::File, io::{BufRead, BufReader}};
 
-pub fn read_all_records<T>(readable: T) -> Vec<Vec<String>>
+pub fn read_all_records(source: Option<String>) -> Vec<Vec<String>> {
+    match source {
+        None => read_all_records_from_readable(std::io::stdin().lock()),
+        Some(name) => read_all_records_from_readable(
+            BufReader::new(File::open(name).unwrap())),
+    }
+}
+
+fn read_all_records_from_readable<T>(readable: T) -> Vec<Vec<String>>
 where
     T: BufRead,
 {
