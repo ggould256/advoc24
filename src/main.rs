@@ -1,6 +1,8 @@
 use std::env;
 
-pub mod day1;
+mod parsing;
+mod day1;
+mod day2;
 
 fn main() {
     if env::args().len() == 1 {
@@ -12,6 +14,8 @@ fn main() {
                 match arg.as_str() {
                     "day1" => day1::day1(),
                     "day1b" => day1::day1b(),
+                    "day2" => day2::day2(),
+                    "day2b" => day2::day2b(),
                     _ => panic!("Skipping unknown test {}", arg),
                 }
             )
