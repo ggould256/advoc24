@@ -52,13 +52,14 @@ fn all_search_lines(input: String) -> Vec<String> {
     result
 }
 
-fn count_xmas_in_lines(input: Vec<String>) -> i32 {
+fn count_word_in_lines(input: Vec<String>, target_word: &str) -> i32 {
     let mut result = 0;
+    let target_len = target_word.len();
     for line in input.iter() {
         let mut count_in_line = 0;
-        if line.len() >= 3 {
-            for i in 0..(line.len() - 3) {
-                if &line[i..i + 4] == "XMAS" {
+        if line.len() >= target_len - 1 {
+            for i in 0..(line.len() - (target_len - 1)) {
+                if &line[i..(i + target_len)] == target_word {
                     count_in_line += 1;
                 }
             }
@@ -77,7 +78,7 @@ fn count_xmas_in_lines(input: Vec<String>) -> i32 {
 
 fn find_words(input: String) -> i32 {
     let search_lines = all_search_lines(input);
-    count_xmas_in_lines(search_lines)
+    count_word_in_lines(search_lines, "XMAS")
 }
 
 pub fn day4(source: Option<String>) -> i32 {
