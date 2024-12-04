@@ -1,4 +1,13 @@
-use std::{fs::File, io::{BufRead, BufReader}};
+use std::fs::File;
+use std::io::BufRead;
+use std::io::BufReader;
+
+pub fn read_lines(source: Option<String>) -> Vec<String> {
+    match source {
+        None => std::io::stdin().lock().lines().map(Result::unwrap).collect(),
+        Some(name) => BufReader::new(File::open(name).unwrap()).lines().map(Result::unwrap).collect(),
+    }
+}
 
 pub fn read_all_records(source: Option<String>) -> Vec<Vec<String>> {
     match source {

@@ -4,6 +4,7 @@ mod parsing;
 mod day1;
 mod day2;
 mod day3;
+mod day4;
 
 fn main() {
     if env::args().len() == 1 {
@@ -19,6 +20,8 @@ fn main() {
                     "day2b" => day2::day2b(None),
                     "day3" => day3::day3(None),
                     "day3b" => day3::day3b(None),
+                    "day4" => day4::day4(None),
+                    "day4b" => day4::day4b(None),
                     _ => panic!("Skipping unknown test {}", arg),
                 }
             )

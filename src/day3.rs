@@ -1,20 +1,12 @@
-use std::io::BufReader;
-use std::fs::File;
-use std::io::BufRead;
 use lazy_static::lazy_static;
 use regex::Regex;
+
+use crate::parsing::read_lines;
 
 lazy_static! {
     static ref MUL_RE: Regex = Regex::new(r"mul\((\d{1,3}),(\d{1,3})\)").unwrap();
     static ref OP_RE: Regex = Regex::new(
         r"(?:do\(\))|(?:don't\(\))|(?:mul\((\d{1,3}),(\d{1,3})\))").unwrap();
-}
-
-fn read_lines(source: Option<String>) -> Vec<String> {
-    match source {
-        None => std::io::stdin().lock().lines().map(Result::unwrap).collect(),
-        Some(name) => BufReader::new(File::open(name).unwrap()).lines().map(Result::unwrap).collect(),
-    }
 }
 
 fn count_muls(lines: Vec<String>) -> i32 {
