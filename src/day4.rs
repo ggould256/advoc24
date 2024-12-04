@@ -6,13 +6,22 @@ fn all_search_lines(input: String) -> Vec<String> {
     println!("Input is {} x {}", w, h);
     let mut result = vec!();
     // The horizontal lines
-    result.push(input);
+    result.push(input.clone());
     // The vertical lines
-
+    for i in 0..w {
+        let offsets = (i..input.len()).step_by(w + 2);
+        result.push(offsets.map(|x| input.chars().nth(x).unwrap()).collect());
+    }
     // The southeast diagonals
-
+    for i in 0..w {
+        let offsets = (i..input.len()).step_by(w + 3);
+        result.push(offsets.map(|x| input.chars().nth(x).unwrap()).collect());
+    }
     // The southwest diagonals
-
+    for i in 0..w {
+        let offsets = (i..input.len()).step_by(w + 1);
+        result.push(offsets.map(|x| input.chars().nth(x).unwrap()).collect());
+    }
     result
 }
 
