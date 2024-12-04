@@ -1,40 +1,18 @@
-use crate::parsing::read_lines;
+use crate::parsing::read_one_string;
 
-/** Selects a range of a string, but truncates the range requested to avoid
- * errors.
- */
-fn wide_range(input: String, start: i32, end: i32) -> String {
-    let ustart: usize = if start < 0 { 0 } else { usize::try_from(start).unwrap() };
-    let uend: usize = if end < 0 { 0 } else { usize::try_from(end).unwrap() };
-    
-    input[usize::min(ustart, input.len())
-          ..usize::min(uend, input.len())].to_string()
-}
-
-fn all_search_lines(input: Vec<String>) -> Vec<String> {
-    let h = input.len();
-    let w = input[0].len();
+fn all_search_lines(input: String) -> Vec<String> {
+    let w = input.find("\n").unwrap();
+    let h = input.len() / (w + 1);
+    println!("Input is {} x {}", w, h);
     let mut result = vec!();
     // The horizontal lines
-    result.append(&mut input.clone());
+    result.push(input);
     // The vertical lines
-    for i in 0..w {
-        result.push(input.iter().map(|l| l.chars().nth(i).unwrap()).collect());
-    }
+
     // The southeast diagonals
-    for i in 0..h {
-        ...
-    }
-    for i in 1..w {
-        ...
-    }
+
     // The southwest diagonals
-    for i in 1..w {
-        ...
-    }
-    for i in 0..h {
-        ...
-    }
+
     result
 }
 
@@ -50,19 +28,19 @@ fn count_xmas_in_lines(input: Vec<String>) -> i32 {
     result
 }
 
-fn find_words(input: Vec<String>) -> i32{
+fn find_words(input: String) -> i32{
     let search_lines = all_search_lines(input);
     count_xmas_in_lines(search_lines)
 }
 
 
 pub fn day4(source: Option<String>) -> i32 {
-    let lines = read_lines(source);
+    let lines = read_one_string(source);
     find_words(lines)
 }
 
 pub fn day4b(source: Option<String>) -> i32 {
-    let lines = read_lines(source);
+    let lines = read_one_string(source);
     find_words(lines)
 }
 

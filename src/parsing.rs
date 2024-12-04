@@ -1,6 +1,23 @@
 use std::fs::File;
 use std::io::BufRead;
 use std::io::BufReader;
+use std::io::Read;
+
+pub fn read_one_string(source: Option<String>) -> String {
+    match source {
+        None => {
+            let mut buf = String::new();
+            std::io::stdin().lock().read_to_string(&mut buf).unwrap();
+            buf
+        }
+        Some(name) => {
+            let mut buf = String::new();
+            BufReader::new(File::open(name).unwrap())
+                .read_to_string(&mut buf).unwrap();
+            buf
+        }
+    }
+}
 
 pub fn read_lines(source: Option<String>) -> Vec<String> {
     match source {
