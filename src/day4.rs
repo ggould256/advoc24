@@ -1,4 +1,4 @@
-use crate::parsing::read_one_string;
+use crate::parsing::{read_lines, read_one_string};
 
 fn stride_text(input: &String, start: usize, stride: usize) -> String {
     let mut line_iter = input.chars();
@@ -76,6 +76,18 @@ fn count_word_in_lines(input: Vec<String>, target_word: &str) -> i32 {
     result
 }
 
+fn sliding_windows(input: Vec<String>, w: usize, h: usize) -> Vec<String> {
+    vec![]
+}
+
+fn find_xs(input: Vec<String>) -> i32 {
+    let mut result = 0;
+    for vignette in sliding_windows(input, 3, 3) {
+        result += 1;
+    }
+    result
+}
+
 fn find_words(input: String) -> i32 {
     let search_lines = all_search_lines(input);
     count_word_in_lines(search_lines, "XMAS")
@@ -87,8 +99,8 @@ pub fn day4(source: Option<String>) -> i32 {
 }
 
 pub fn day4b(source: Option<String>) -> i32 {
-    let lines = read_one_string(source);
-    find_words(lines)
+    let lines = read_lines(source);
+    find_xs(lines)
 }
 
 #[cfg(test)]
