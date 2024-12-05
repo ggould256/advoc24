@@ -73,7 +73,7 @@ fn fix_update(update: &Vec<u32>, rules: &Vec<(u32, u32)>) -> Vec<u32> {
     result
 }
 
-fn middle_element(update: &Vec<u32>) -> u32 {
+fn middle_element(update: &[u32]) -> u32 {
     update[(update.len() - 1) / 2]
 }
 
@@ -82,7 +82,7 @@ pub fn day5(source: Option<String>) -> i32 {
     let rules = read_rules(&lines);
     let updates = read_updates(&lines);
     let valid_updates = updates.iter().filter(|&u| valid_update(u, &rules));
-    let total: u32 = valid_updates.map(middle_element).sum();
+    let total: u32 = valid_updates.map(|u| middle_element(u)).sum();
     i32::try_from(total).unwrap()
 }
 
@@ -113,5 +113,10 @@ mod tests {
     #[test]
     fn test_example_b() {
         assert_eq!(day5b(Some("data/day5_example.txt".to_string())), 123);
+    }
+
+    #[test]
+    fn test_test_b() {
+        assert_eq!(day5b(Some("data/day5_test.txt".to_string())), 5169);
     }
 }
