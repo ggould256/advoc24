@@ -71,3 +71,20 @@ pub fn parse_as_i32s(input: Vec<Vec<String>>) -> Vec<Vec<i32>> {
     }
     result
 }
+
+pub fn stride_text(input: &str, start: usize, stride: usize) -> String {
+    let mut line_iter = input.chars();
+    let mut line = String::new();
+    line += &line_iter.nth(start).unwrap().to_string();
+    loop {
+        match line_iter.nth(stride - 1) {
+            None => {
+                break;
+            }
+            Some(c) => {
+                line += &c.to_string();
+            }
+        }
+    }
+    line
+}

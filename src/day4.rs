@@ -1,21 +1,4 @@
-use crate::parsing::{read_lines, read_one_string};
-
-fn stride_text(input: &String, start: usize, stride: usize) -> String {
-    let mut line_iter = input.chars();
-    let mut line = String::new();
-    line += &line_iter.nth(start).unwrap().to_string();
-    loop {
-        match line_iter.nth(stride - 1) {
-            None => {
-                break;
-            }
-            Some(c) => {
-                line += &c.to_string();
-            }
-        }
-    }
-    line
-}
+use crate::parsing::{read_lines, read_one_string, stride_text};
 
 fn all_search_lines(input: String) -> Vec<String> {
     // Imagine the grid:
@@ -76,14 +59,37 @@ fn count_word_in_lines(input: Vec<String>, target_word: &str) -> i32 {
     result
 }
 
-fn sliding_windows(input: Vec<String>, w: usize, h: usize) -> Vec<String> {
-    vec![]
+fn sliding_windows(input: Vec<String>, window_w: usize, window_h: usize) -> Vec<Vec<String>> {
+    let input_h = input.len();
+    let input_w = input[0].len();
+    let mut result = Vec::new();
+    for window_x in 0..=(input_w - window_w) {
+        for window_y in 0..=(input_h - window_h) {
+            let mut window = Vec::<String>::new();
+            for line_y in &input[window_y..(window_y + window_h)] {
+                window.push(line_y[window_x..(window_x+window_w)].to_string())
+            }
+            result.push(window);
+        }
+    }
+    result
 }
 
-fn find_xs(input: Vec<String>) -> i32 {
+#[allow(clippy::iter_nth_zero)]  // for parallel-construction readability.
+fn count_x_mas_s(input: Vec<String>) -> i32 {
     let mut result = 0;
     for vignette in sliding_windows(input, 3, 3) {
-        result += 1;
+        let x_readout: String = vec![
+            vignette[0].chars().nth(0).unwrap(), 
+            vignette[0].chars().nth(2).unwrap(), 
+            vignette[1].chars().nth(1).unwrap(), 
+            vignette[2].chars().nth(0).unwrap(), 
+            vignette[2].chars().nth(2).unwrap(), ].into_iter().collect();
+        let x_readout_str: &str = &x_readout;
+        let xs = ["MMASS", "MSAMS", "SMASM", "SSAMM"];
+        if xs.contains(&x_readout_str) {
+            result += 1;
+        }
     }
     result
 }
@@ -100,7 +106,7 @@ pub fn day4(source: Option<String>) -> i32 {
 
 pub fn day4b(source: Option<String>) -> i32 {
     let lines = read_lines(source);
-    find_xs(lines)
+    count_x_mas_s(lines)
 }
 
 #[cfg(test)]
@@ -115,5 +121,15 @@ mod tests {
     #[test]
     fn test_test() {
         assert_eq!(day4(Some("data/day4_test.txt".to_string())), 2504);
+    }
+
+    #[test]
+    fn test_example_b() {
+        assert_eq!(day4b(Some("data/day4_example.txt".to_string())), 9);
+    }
+
+    #[test]
+    fn test_test_b() {
+        assert_eq!(day4b(Some("data/day4_test.txt".to_string())), 1923);
     }
 }
