@@ -65,7 +65,7 @@ mod tests {
 
     #[test]
     fn test_test() {
-        assert_eq!(day3(Some("data/day3_test.txt".to_string())), 165225049);
+        assert_eq!(day3(Some("inputs/day3_test.txt".to_string())), 165225049);
     }
 
     #[test]
@@ -75,6 +75,6 @@ mod tests {
     
     #[test]
     fn test_test_b() {
-        assert_eq!(day3b(Some("data/day3_test.txt".to_string())), 108830766);
+        assert_eq!(day3b(Some("inputs/day3_test.txt".to_string())), 108830766);
     }
 }
