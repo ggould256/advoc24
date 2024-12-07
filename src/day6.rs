@@ -11,20 +11,20 @@ type Coords = (usize, usize);
 #[derive(Clone, Copy, Debug)]
 #[derive(Eq, Hash, PartialEq)]
 enum Facing {
-    NORTH,
-    EAST,
-    SOUTH,
-    WEST,
+    North,
+    East,
+    South,
+    West,
 }
-const FACINGS: [Facing; 4] = [Facing::NORTH, Facing::EAST, Facing::SOUTH, Facing::WEST];
+const FACINGS: [Facing; 4] = [Facing::North, Facing::East, Facing::South, Facing::West];
 
 impl Facing {
     fn repr(&self) -> char {
         match self {
-            Facing::NORTH => '^',
-            Facing::EAST => '>',
-            Facing::SOUTH => 'v',
-            Facing::WEST => '<',
+            Facing::North => '^',
+            Facing::East => '>',
+            Facing::South => 'v',
+            Facing::West => '<',
         }
     }
 
@@ -37,19 +37,19 @@ impl Facing {
 
     fn clockwise(&self) -> Facing {
         match self {
-            Facing::NORTH => Facing::EAST,
-            Facing::EAST => Facing::SOUTH,
-            Facing::SOUTH => Facing::WEST,
-            Facing::WEST => Facing::NORTH,
+            Facing::North => Facing::East,
+            Facing::East => Facing::South,
+            Facing::South => Facing::West,
+            Facing::West => Facing::North,
         }
     }
 
     fn offset(&self) -> (i8, i8) {
         match self {
-            Facing::NORTH => (0, -1),
-            Facing::EAST => (1, 0),
-            Facing::SOUTH => (0, 1),
-            Facing::WEST => (-1, 0),
+            Facing::North => (0, -1),
+            Facing::East => (1, 0),
+            Facing::South => (0, 1),
+            Facing::West => (-1, 0),
         }
     }
 }
