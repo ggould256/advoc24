@@ -29,10 +29,7 @@ impl Facing {
     }
 
     fn from_char(c: char) -> Option<Facing> {
-        for f in FACINGS {
-            if f.repr() == c { return Some(f); }
-        }
-        None
+        FACINGS.into_iter().find(|&f| f.repr() == c)
     }
 
     fn clockwise(&self) -> Facing {
@@ -88,11 +85,15 @@ impl GameState {
     }
 
     fn position_forward(&self) -> Option<Coords> {
+        // TODO(ggould) There's got to be a better way!
         let old_pos = self.position;
         let offset = self.facing.offset();
+        let new_pos_as_i32: (i32, i32) = (
+            i32::try_from(old_pos.0).ok()? + i32::from(offset.0),
+            i32::try_from(old_pos.1).ok()? + i32::from(offset.1));
         let new_pos: Coords = (
-            usize::try_from(i32::try_from(old_pos.0).ok()? + i32::try_from(offset.0).ok()?).ok()?,
-            usize::try_from(i32::try_from(old_pos.1).ok()? + i32::try_from(offset.1).ok()?).ok()?,
+            usize::try_from(new_pos_as_i32.0).ok()?,
+            usize::try_from(new_pos_as_i32.1).ok()?,
         );
         if new_pos.0 >= self.w() || new_pos.1 >= self.h() {
             None
@@ -127,12 +128,9 @@ impl GameState {
         result
     }
 
-    fn detect_guard(lines: &Vec<String>) -> (Facing, Coords) {
-        for y in 0..lines.len() {
-            let line  = &lines[y];
-            let chars: Vec<char> = line.chars().collect();
-            for x in 0..chars.len() {
-                let c = chars[x];
+    fn detect_guard(lines: &[String]) -> (Facing, Coords) {
+        for (y, line) in lines.iter().enumerate() {
+            for (x, c) in line.chars().enumerate() {
                 if let Some(f) = Facing::from_char(c) {
                     return (f, (x, y));
                 }
@@ -179,15 +177,13 @@ pub fn day6b(source: Option<String>) -> i32 {
     let game = GameState::from_lines(lines);
     let possible_obstacle_locs = visited_set(&game).unwrap();
     let mut looping_obstacle_locs = HashSet::new();
-    let mut counter = 0;
-    for (_, xy) in &possible_obstacle_locs {
+    for (counter, (_, xy)) in possible_obstacle_locs.iter().enumerate() {
         let mut altered_game = game.clone();
         altered_game.grid[xy.1][xy.0] = true;
         if visited_set(&altered_game).is_none() {
             println!("Found loop at {} {}; tested {} of {}", xy.0, xy.1, counter, possible_obstacle_locs.len());
             looping_obstacle_locs.insert(xy);
         }
-        counter += 1;
     }
     i32::try_from(looping_obstacle_locs.len()).unwrap()
 }

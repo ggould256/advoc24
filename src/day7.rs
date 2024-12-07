@@ -2,19 +2,19 @@ use crate::parsing::read_lines;
 
 #[derive(Clone, Copy, Debug)]
 enum Operator {
-    ADD,
-    MUL,
-    CONCAT,
+    Add,
+    Mul,
+    Concat,
 }
-const CHEAP_OPERATORS: [Operator; 2] = [Operator::ADD, Operator::MUL];
-const ALL_OPERATORS: [Operator; 3] = [Operator::ADD, Operator::MUL, Operator::CONCAT];
+const CHEAP_OPERATORS: [Operator; 2] = [Operator::Add, Operator::Mul];
+const ALL_OPERATORS: [Operator; 3] = [Operator::Add, Operator::Mul, Operator::Concat];
 
 impl Operator {
     pub fn apply(&self, l: i64, r: i64) -> i64 {
         match self {
-            Operator::ADD => l + r,
-            Operator::MUL => l * r,
-            Operator::CONCAT => (l.to_string() + &r.to_string()).parse::<i64>().unwrap(),
+            Operator::Add => l + r,
+            Operator::Mul => l * r,
+            Operator::Concat => (l.to_string() + &r.to_string()).parse::<i64>().unwrap(),
         }
     }
 
@@ -41,7 +41,7 @@ impl Operator {
 fn parse_line(line: String) -> (i64, Vec<i64>) {
     let sides: Vec<&str> = line.split(":").collect();
     assert!(sides.len() == 2);
-    let target = str::parse::<i64>(&sides[0]).unwrap();
+    let target = str::parse::<i64>(sides[0]).unwrap();
     let operands: Vec<i64> = sides[1].trim_start().split(" ")
                              .map(|s| str::parse::<i64>(s).unwrap())
                              .collect();
