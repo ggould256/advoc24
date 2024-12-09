@@ -4,7 +4,9 @@ use crate::parsing::read_lines;
 
 type Channel = char;
 type CoordScalar = i32;
-fn as_coord_scalar(x: usize) -> CoordScalar {x.try_into().unwrap()}
+fn as_coord_scalar(x: usize) -> CoordScalar {
+    x.try_into().unwrap()
+}
 type Coords = (CoordScalar, CoordScalar);
 
 fn find_all_antennas(lines: Vec<String>) -> Vec<(Channel, Coords)> {
@@ -38,15 +40,29 @@ fn find_antinode_pairs(antennas: Vec<(Channel, Coords, Coords)>) -> HashSet<Coor
         //         A -- B
         //     *             *
         //  A + (A - B)   B + (B - A)
-        println!("Channel {} produced an antinode at {},{}", c_, 2*x1 - x2, 2*y1 - y2);
-        println!("Channel {} produced an antinode at {},{}", c_, 2*x2 - x1, 2*y2 - y1);
-        result.insert((2*x1 - x2, 2*y1 - y2));
-        result.insert((2*x2 - x1, 2*y2 - y1));
+        println!(
+            "Channel {} produced an antinode at {},{}",
+            c_,
+            2 * x1 - x2,
+            2 * y1 - y2
+        );
+        println!(
+            "Channel {} produced an antinode at {},{}",
+            c_,
+            2 * x2 - x1,
+            2 * y2 - y1
+        );
+        result.insert((2 * x1 - x2, 2 * y1 - y2));
+        result.insert((2 * x2 - x1, 2 * y2 - y1));
     }
     result
 }
 
-fn find_antinode_rays(antennas: Vec<(Channel, Coords, Coords)>, w: CoordScalar, h: CoordScalar) -> HashSet<Coords> {
+fn find_antinode_rays(
+    antennas: Vec<(Channel, Coords, Coords)>,
+    w: CoordScalar,
+    h: CoordScalar,
+) -> HashSet<Coords> {
     let mut result = HashSet::new();
     for (_c, (x1, y1), (x2, y2)) in antennas {
         for i in 0.. {
@@ -64,7 +80,7 @@ fn find_antinode_rays(antennas: Vec<(Channel, Coords, Coords)>, w: CoordScalar, 
                 break;
             }
             result.insert((new_x, new_y));
-        }            
+        }
     }
     result
 }
@@ -77,12 +93,14 @@ pub fn day8(source: Option<String>) -> i64 {
     let pairs = find_antenna_pairs(antennas);
     let linear_antinodes: HashSet<Coords> = find_antinode_pairs(pairs);
     let filtered_result: HashSet<Coords> = linear_antinodes
-        .iter().filter(|c| c.0 >= 0 && c.0 < w &&
-                                         c.1 >= 0 && c.1 < h).copied().collect();
+        .iter()
+        .filter(|c| c.0 >= 0 && c.0 < w && c.1 >= 0 && c.1 < h)
+        .copied()
+        .collect();
     filtered_result.len().try_into().unwrap()
 }
 
-pub fn day8b(source: Option<String>) -> i64 { 
+pub fn day8b(source: Option<String>) -> i64 {
     let lines = read_lines(source);
     let h: CoordScalar = as_coord_scalar(lines.len());
     let w: CoordScalar = as_coord_scalar(lines[0].len());
@@ -90,11 +108,12 @@ pub fn day8b(source: Option<String>) -> i64 {
     let pairs = find_antenna_pairs(antennas);
     let linear_antinodes: HashSet<Coords> = find_antinode_rays(pairs, w, h);
     let filtered_result: HashSet<Coords> = linear_antinodes
-        .iter().filter(|c| c.0 >= 0 && c.0 < w &&
-                                         c.1 >= 0 && c.1 < h).copied().collect();
+        .iter()
+        .filter(|c| c.0 >= 0 && c.0 < w && c.1 >= 0 && c.1 < h)
+        .copied()
+        .collect();
     filtered_result.len().try_into().unwrap()
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -106,6 +125,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore = "requires input not in repository"]
     fn test_test() {
         assert_eq!(day8(Some("inputs/day8_test.txt".to_string())), 344);
     }
@@ -116,6 +136,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore = "requires input not in repository"]
     fn test_test_b() {
         assert_eq!(day8b(Some("inputs/day8_test.txt".to_string())), 1182);
     }

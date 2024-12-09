@@ -19,14 +19,17 @@ impl Operator {
     }
 
     pub fn all_seqs(len: usize, allow_expensive: bool) -> Vec<Vec<Operator>> {
-        if len == 0 { vec![Vec::new()] }
-        else {
+        if len == 0 {
+            vec![Vec::new()]
+        } else {
             let mut seqs = Vec::new();
             let shorter = Self::all_seqs(len - 1, allow_expensive);
             for shorter_seq in shorter {
-                let all_operators = 
-                    if allow_expensive {Vec::from(ALL_OPERATORS)}
-                    else {Vec::from(CHEAP_OPERATORS)};
+                let all_operators = if allow_expensive {
+                    Vec::from(ALL_OPERATORS)
+                } else {
+                    Vec::from(CHEAP_OPERATORS)
+                };
                 for op in all_operators {
                     let mut new_seq = shorter_seq.clone();
                     new_seq.push(op);
@@ -42,9 +45,11 @@ fn parse_line(line: String) -> (i64, Vec<i64>) {
     let sides: Vec<&str> = line.split(":").collect();
     assert!(sides.len() == 2);
     let target = str::parse::<i64>(sides[0]).unwrap();
-    let operands: Vec<i64> = sides[1].trim_start().split(" ")
-                             .map(|s| str::parse::<i64>(s).unwrap())
-                             .collect();
+    let operands: Vec<i64> = sides[1]
+        .trim_start()
+        .split(" ")
+        .map(|s| str::parse::<i64>(s).unwrap())
+        .collect();
     (target, operands)
 }
 
@@ -73,10 +78,9 @@ pub fn day7(source: Option<String>) -> i64 {
     day7_base(source, false)
 }
 
-pub fn day7b(source: Option<String>) -> i64 { 
+pub fn day7b(source: Option<String>) -> i64 {
     day7_base(source, true)
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -88,6 +92,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore = "requires input not in repository"]
     fn test_test() {
         assert_eq!(day7(Some("inputs/day7_test.txt".to_string())), 945512582195);
     }
@@ -98,8 +103,12 @@ mod tests {
     }
 
     // This test is not run as it requires a lot of time.
-    #[allow(dead_code)]
+    #[test]
+    #[ignore = "requires input not in repository"]
     fn test_test_b() {
-        assert_eq!(day7b(Some("inputs/day7_test.txt".to_string())), 271691107779347);
+        assert_eq!(
+            day7b(Some("inputs/day7_test.txt".to_string())),
+            271691107779347
+        );
     }
 }

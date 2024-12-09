@@ -8,8 +8,7 @@ type Grid = Vec<Vec<bool>>;
 // Coordinates in the grid
 type Coords = (usize, usize);
 
-#[derive(Clone, Copy, Debug)]
-#[derive(Eq, Hash, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 enum Facing {
     North,
     East,
@@ -59,10 +58,14 @@ struct GameState {
 }
 
 impl GameState {
-    pub fn h(&self) -> usize { self.grid.len() }
-    pub fn w(&self) -> usize { self.grid[0].len() }
+    pub fn h(&self) -> usize {
+        self.grid.len()
+    }
+    pub fn w(&self) -> usize {
+        self.grid[0].len()
+    }
 
-    #[allow(dead_code)]  // Debug visualization.
+    #[allow(dead_code)] // Debug visualization.
     pub fn ascii_art(&self) -> String {
         let mut result = String::new();
         for y in 0..self.h() {
@@ -90,7 +93,8 @@ impl GameState {
         let offset = self.facing.offset();
         let new_pos_as_i32: (i32, i32) = (
             i32::try_from(old_pos.0).ok()? + i32::from(offset.0),
-            i32::try_from(old_pos.1).ok()? + i32::from(offset.1));
+            i32::try_from(old_pos.1).ok()? + i32::from(offset.1),
+        );
         let new_pos: Coords = (
             usize::try_from(new_pos_as_i32.0).ok()?,
             usize::try_from(new_pos_as_i32.1).ok()?,
@@ -105,7 +109,7 @@ impl GameState {
     pub fn advance_game_state(&self) -> Option<GameState> {
         let next_pos = self.position_forward();
         match next_pos {
-            None => None,  // Left the game board.
+            None => None, // Left the game board.
             Some(pos) => {
                 if self.at(pos) {
                     // Collided; turn right
@@ -113,7 +117,11 @@ impl GameState {
                     result.facing = self.facing.clockwise();
                     Some(result)
                 } else {
-                    Some(GameState{position: pos, facing: self.facing, grid: self.grid.clone()})
+                    Some(GameState {
+                        position: pos,
+                        facing: self.facing,
+                        grid: self.grid.clone(),
+                    })
                 }
             }
         }
@@ -142,7 +150,11 @@ impl GameState {
     pub fn from_lines(lines: Vec<String>) -> GameState {
         let grid = GameState::create_grid(&lines);
         let (facing, position) = GameState::detect_guard(&lines);
-        GameState{position, facing, grid}
+        GameState {
+            position,
+            facing,
+            grid,
+        }
     }
 }
 
@@ -157,8 +169,12 @@ fn visited_set(start: &GameState) -> Option<HashSet<(Facing, Coords)>> {
         }
         visited.insert((game.facing, game.position));
         match game.advance_game_state() {
-            None => { break; }
-            Some(s) => { game = s; }
+            None => {
+                break;
+            }
+            Some(s) => {
+                game = s;
+            }
         }
     }
     Some(visited)
@@ -168,11 +184,12 @@ pub fn day6(source: Option<String>) -> i32 {
     let lines = read_lines(source);
     let game = GameState::from_lines(lines);
     let visited = visited_set(&game);
-    let visited_xy: HashSet<Coords> = HashSet::from_iter(visited.unwrap().iter().map(|(_, xy)| *xy));
+    let visited_xy: HashSet<Coords> =
+        HashSet::from_iter(visited.unwrap().iter().map(|(_, xy)| *xy));
     visited_xy.len().try_into().unwrap()
 }
 
-pub fn day6b(source: Option<String>) -> i32 { 
+pub fn day6b(source: Option<String>) -> i32 {
     let lines = read_lines(source);
     let game = GameState::from_lines(lines);
     let possible_obstacle_locs = visited_set(&game).unwrap();
@@ -181,13 +198,18 @@ pub fn day6b(source: Option<String>) -> i32 {
         let mut altered_game = game.clone();
         altered_game.grid[xy.1][xy.0] = true;
         if visited_set(&altered_game).is_none() {
-            println!("Found loop at {} {}; tested {} of {}", xy.0, xy.1, counter, possible_obstacle_locs.len());
+            println!(
+                "Found loop at {} {}; tested {} of {}",
+                xy.0,
+                xy.1,
+                counter,
+                possible_obstacle_locs.len()
+            );
             looping_obstacle_locs.insert(xy);
         }
     }
     i32::try_from(looping_obstacle_locs.len()).unwrap()
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -199,6 +221,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore = "requires input not in repository"]
     fn test_test() {
         assert_eq!(day6(Some("inputs/day6_test.txt".to_string())), 4903);
     }
@@ -209,7 +232,8 @@ mod tests {
     }
 
     // This test is not run as it requires a lot of time.
-    #[allow(dead_code)]
+    #[test]
+    #[ignore = "requires input not in repository"]
     fn test_test_b() {
         assert_eq!(day6b(Some("inputs/day6_test.txt".to_string())), 1911);
     }

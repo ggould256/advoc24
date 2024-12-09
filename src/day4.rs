@@ -67,7 +67,7 @@ fn sliding_windows(input: Vec<String>, window_w: usize, window_h: usize) -> Vec<
         for window_y in 0..=(input_h - window_h) {
             let mut window = Vec::<String>::new();
             for line_y in &input[window_y..(window_y + window_h)] {
-                window.push(line_y[window_x..(window_x+window_w)].to_string())
+                window.push(line_y[window_x..(window_x + window_w)].to_string())
             }
             result.push(window);
         }
@@ -75,16 +75,19 @@ fn sliding_windows(input: Vec<String>, window_w: usize, window_h: usize) -> Vec<
     result
 }
 
-#[allow(clippy::iter_nth_zero)]  // for parallel-construction readability.
+#[allow(clippy::iter_nth_zero)] // for parallel-construction readability.
 fn count_x_mas_s(input: Vec<String>) -> i32 {
     let mut result = 0;
     for vignette in sliding_windows(input, 3, 3) {
         let x_readout: String = vec![
-            vignette[0].chars().nth(0).unwrap(), 
-            vignette[0].chars().nth(2).unwrap(), 
-            vignette[1].chars().nth(1).unwrap(), 
-            vignette[2].chars().nth(0).unwrap(), 
-            vignette[2].chars().nth(2).unwrap(), ].into_iter().collect();
+            vignette[0].chars().nth(0).unwrap(),
+            vignette[0].chars().nth(2).unwrap(),
+            vignette[1].chars().nth(1).unwrap(),
+            vignette[2].chars().nth(0).unwrap(),
+            vignette[2].chars().nth(2).unwrap(),
+        ]
+        .into_iter()
+        .collect();
         let x_readout_str: &str = &x_readout;
         let xs = ["MMASS", "MSAMS", "SMASM", "SSAMM"];
         if xs.contains(&x_readout_str) {
@@ -119,6 +122,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore = "requires input not in repository"]
     fn test_test() {
         assert_eq!(day4(Some("inputs/day4_test.txt".to_string())), 2504);
     }
@@ -129,6 +133,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore = "requires input not in repository"]
     fn test_test_b() {
         assert_eq!(day4b(Some("inputs/day4_test.txt".to_string())), 1923);
     }

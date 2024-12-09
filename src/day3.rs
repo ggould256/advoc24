@@ -5,8 +5,8 @@ use crate::parsing::read_lines;
 
 lazy_static! {
     static ref MUL_RE: Regex = Regex::new(r"mul\((\d{1,3}),(\d{1,3})\)").unwrap();
-    static ref OP_RE: Regex = Regex::new(
-        r"(?:do\(\))|(?:don't\(\))|(?:mul\((\d{1,3}),(\d{1,3})\))").unwrap();
+    static ref OP_RE: Regex =
+        Regex::new(r"(?:do\(\))|(?:don't\(\))|(?:mul\((\d{1,3}),(\d{1,3})\))").unwrap();
 }
 
 fn count_muls(lines: Vec<String>) -> i32 {
@@ -53,7 +53,6 @@ pub fn day3b(source: Option<String>) -> i32 {
     count_enabled_muls(lines)
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -64,6 +63,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore = "requires input not in repository"]
     fn test_test() {
         assert_eq!(day3(Some("inputs/day3_test.txt".to_string())), 165225049);
     }
@@ -72,8 +72,9 @@ mod tests {
     fn test_example_b() {
         assert_eq!(day3b(Some("data/day3_example_b.txt".to_string())), 48);
     }
-    
+
     #[test]
+    #[ignore = "requires input not in repository"]
     fn test_test_b() {
         assert_eq!(day3b(Some("inputs/day3_test.txt".to_string())), 108830766);
     }

@@ -106,6 +106,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore = "requires input not in repository"]
     fn test_test() {
         assert_eq!(day5(Some("inputs/day5_test.txt".to_string())), 6242);
     }
@@ -116,6 +117,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore = "requires input not in repository"]
     fn test_test_b() {
         assert_eq!(day5b(Some("inputs/day5_test.txt".to_string())), 5169);
     }
