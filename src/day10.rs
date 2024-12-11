@@ -137,7 +137,7 @@ mod tests {
 
     #[test]
     fn test_example() {
-        assert_eq!(day10(Some("data/day10_example.txt".to_string())), 14);
+        assert_eq!(day10(Some("data/day10_example.txt".to_string())), 36);
     }
 
     #[test]
@@ -154,6 +154,6 @@ mod tests {
     #[test]
     #[ignore = "requires input not in repository"]
     fn test_test_b() {
-        assert_eq!(day10b(Some("inputs/day10_test.txt".to_string())), 1182);
+        assert_eq!(day10b(Some("inputs/day10_test.txt".to_string())), 1086);
     }
 }
