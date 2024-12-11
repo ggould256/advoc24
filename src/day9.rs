@@ -12,7 +12,7 @@ struct RleItem {
 }
 type RleList = Vec<RleItem>;
 
-fn str_to_rle(source: &String) -> RleList {
+fn str_to_rle(source: &str) -> RleList {
     let mut result = RleList::new();
     let mut next_id: Id = 0;
     let mut chars = source.chars();
@@ -51,7 +51,7 @@ fn rle_to_map_str(rle: &RleList) -> String {
             }
             None => {
                 for _ in 0..*length {
-                    result += &".".to_string();
+                    result += ".";
                 }
             }
         }
@@ -65,9 +65,7 @@ fn is_compact(rle: &RleList) -> bool {
         if item.length > 0 {
             if item.id.is_none() && item.length > 0 {
                 found_empty = true;
-            } else {
-                if found_empty { return false; }
-            }
+            } else if found_empty { return false; }
         }
     }
     true
@@ -81,7 +79,7 @@ fn index_of_last_nonempty_item(rle: &RleList) -> usize {
     let reverse_pos = rle
         .iter()
         .rev()
-        .position(|item| !item.id.is_none() && item.length > 0)
+        .position(|item| item.id.is_some() && item.length > 0)
         .unwrap();
     rle.len() - reverse_pos - 1
 }
@@ -102,7 +100,7 @@ fn write_block(rle: &mut RleList, item: &RleItem) {
     rle.insert(
         insert_index,
         RleItem {
-            id: id,
+            id,
             length: remaining_length,
         },
     );
@@ -110,7 +108,7 @@ fn write_block(rle: &mut RleList, item: &RleItem) {
 
 fn move_last_nonempty_block(rle: &mut RleList) {
     let index = index_of_last_nonempty_item(rle);
-    let item_copy = rle[index].clone();
+    let item_copy = rle[index];
     {  // Mutate the item within the list.
         let mut_item: &mut RleItem = rle.get_mut(index).unwrap();
         mut_item.id = None;

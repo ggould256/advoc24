@@ -11,6 +11,7 @@ mod day7;
 mod day8;
 mod day9;
 mod day10;
+mod day11;
 
 fn main() {
     if env::args().len() == 1 {
@@ -38,6 +39,8 @@ fn main() {
                 "day9b" => day9::day9b(None),
                 "day10" => day10::day10(None),
                 "day10b" => day10::day10b(None),
+                "day11" => day11::day11(None),
+                "day11b" => day11::day11b(None),
                 _ => panic!("Skipping unknown test {}", arg),
             };
             println!("{} output: {}", arg, result)

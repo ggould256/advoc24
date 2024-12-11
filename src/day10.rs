@@ -23,10 +23,10 @@ fn make_adjacency(map: &Map) -> Adjacency {
     let w = map[0].len();
     for y in 0..h {
         for x in 0..w {
-            if x > 0 { raw_adjacency.insert(((x, y), (x-1, y)).into()); }
-            if y > 0 { raw_adjacency.insert(((x, y), (x, y-1)).into()); }
-            if x < w-1 { raw_adjacency.insert(((x, y), (x+1, y)).into()); }
-            if y < h-1 { raw_adjacency.insert(((x, y), (x, y+1)).into()); }
+            if x > 0 { raw_adjacency.insert(((x, y), (x-1, y))); }
+            if y > 0 { raw_adjacency.insert(((x, y), (x, y-1))); }
+            if x < w-1 { raw_adjacency.insert(((x, y), (x+1, y))); }
+            if y < h-1 { raw_adjacency.insert(((x, y), (x, y+1))); }
         }
     }
     let raw_adjacency = raw_adjacency;  // Drop mutability.
@@ -50,11 +50,9 @@ fn make_successors(adjacency: &Adjacency) -> HashMap<Coords, HashSet<Coords>> {
 
 fn all_of(map: &Map, elevation: Elevation) -> HashSet<Coords> {
     let mut result = HashSet::new();
-    let h = map.len();
-    let w = map[0].len();
-    for y in 0..h {
-        for x in 0..w {
-            if map[y][x] == elevation {
+    for (y, row) in map.iter().enumerate() {
+        for (x, found_elevation) in row.iter().enumerate() {
+            if *found_elevation == elevation {
                 result.insert((x, y));
             }
         }
@@ -68,11 +66,10 @@ fn reachable(map: &Map, start: &Coords) -> HashSet<Coords> {
     // Simple breadth-first search of the adjacency graph.
     let mut worklist: Vec<Coords> = vec![*start];
     let mut visited: HashSet<Coords> = HashSet::new();
-    while !worklist.is_empty() {
-        let from = worklist.pop().unwrap();
+    while let Some(from) = worklist.pop() {
         if successors.contains_key(&from) {
             for to in successors[&from].iter() {
-                worklist.push(to.clone());
+                worklist.push(*to);
             }
         }
         visited.insert(from);
