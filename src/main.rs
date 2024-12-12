@@ -1,7 +1,9 @@
 use std::env;
 
-mod parsing;
 mod day1;
+mod day10;
+mod day11;
+mod day12;
 mod day2;
 mod day3;
 mod day4;
@@ -10,8 +12,7 @@ mod day6;
 mod day7;
 mod day8;
 mod day9;
-mod day10;
-mod day11;
+mod parsing;
 
 fn main() {
     if env::args().len() == 1 {
@@ -41,6 +42,8 @@ fn main() {
                 "day10b" => day10::day10b(None),
                 "day11" => day11::day11(None),
                 "day11b" => day11::day11b(None),
+                "day12" => day12::day12(None),
+                "day12b" => day12::day12b(None),
                 _ => panic!("Skipping unknown test {}", arg),
             };
             println!("{} output: {}", arg, result)
