@@ -1,7 +1,4 @@
-use std::{
-    collections::{HashMap, HashSet},
-    iter,
-};
+use std::collections::{HashMap, HashSet};
 
 use crate::parsing::read_lines;
 
@@ -18,15 +15,14 @@ fn make_map(input: &Vec<String>) -> Map {
     result
 }
 
-fn at(map: Map, xy: Coords) {
+fn at(map: &Map, (x, y): Coords) -> Color {
     map[y][x]
 }
 
-fn map_to_string(map: Map) -> String {
-    let h = map.len();
-    let w = map[0].len();
+#[allow(dead_code)]
+fn map_to_string(map: &Map) -> String {
     let mut result: String = String::new();
-    for (y, row) in map.iter().enumerate() {
+    for row in map.iter() {
         let row_string: String = row.iter().collect();
         result += &row_string;
         result += "\n";
@@ -34,7 +30,9 @@ fn map_to_string(map: Map) -> String {
     result
 }
 
+#[allow(dead_code)]
 enum AdjacencyOpt {
+    All,
     SameColor,
     DifferentColor,
 }
@@ -66,6 +64,7 @@ fn make_adjacency(map: &Map, style: AdjacencyOpt) -> Adjacency {
         let from_color = map[from_y][from_x];
         let to_color = map[to_y][to_x];
         if match style {
+            AdjacencyOpt::All => true,
             AdjacencyOpt::SameColor => from_color == to_color,
             AdjacencyOpt::DifferentColor => from_color != to_color,
         } {
@@ -83,6 +82,7 @@ fn make_successors(adjacency: &Adjacency) -> HashMap<Coords, HashSet<Coords>> {
     result
 }
 
+#[allow(dead_code)]
 fn all_of(map: &Map, color: Color) -> HashSet<Coords> {
     let mut result = HashSet::new();
     for (y, row) in map.iter().enumerate() {
@@ -95,13 +95,15 @@ fn all_of(map: &Map, color: Color) -> HashSet<Coords> {
     result
 }
 
-fn reachable(map: &Map, start: &Coords) -> HashSet<Coords> {
-    let adjacency = make_adjacency(map, AdjacencyOpt::SameColor);
+fn reachable(start: &Coords, adjacency: &Adjacency) -> HashSet<Coords> {
     let successors = make_successors(&adjacency);
     // Simple breadth-first search of the adjacency graph.
     let mut worklist: Vec<Coords> = vec![*start];
     let mut visited: HashSet<Coords> = HashSet::new();
     while let Some(from) = worklist.pop() {
+        if visited.contains(&from) {
+            continue;
+        }
         if successors.contains_key(&from) {
             for to in successors[&from].iter() {
                 worklist.push(*to);
@@ -112,10 +114,51 @@ fn reachable(map: &Map, start: &Coords) -> HashSet<Coords> {
     visited
 }
 
+fn make_region(map: &Map, start: &Coords) -> HashSet<Coords> {
+    reachable(start, &make_adjacency(map, AdjacencyOpt::SameColor))
+}
+
+fn make_regions(map: &Map) -> Vec<HashSet<Coords>> {
+    let mut consumed: HashSet<Coords> = HashSet::new();
+    let mut result = Vec::new();
+    for (y, row) in map.iter().enumerate() {
+        for (x, _) in row.iter().enumerate() {
+            if !consumed.contains(&(x, y)) {
+                println!(
+                    "Creating new region of {} starting from {:?} ...",
+                    at(map, (x, y)),
+                    &(x, y)
+                );
+                let region = make_region(map, &(x, y));
+                consumed.extend(&region);
+                println!("  ...of size {}", region.len());
+                result.push(region);
+            }
+        }
+    }
+    result
+}
+
+fn score_region(map: &Map, region: &HashSet<Coords>) -> i64 {
+    let mut score = 0;
+    let size = region.len();
+    let same_color_neighbors = make_successors(&make_adjacency(map, AdjacencyOpt::SameColor));
+    for point in region {
+        let neighbor_count = match same_color_neighbors.get(point) {
+            Some(neighbors) => neighbors.len(),
+            None => 0,
+        };
+        let fence_count = 4 - neighbor_count;
+        score += fence_count * size;
+    }
+    score.try_into().unwrap()
+}
+
 pub fn day12(source: Option<String>) -> i64 {
     let lines = read_lines(source);
     let map = make_map(&lines);
-    0
+    let regions = make_regions(&map);
+    regions.iter().map(|r| score_region(&map, r)).sum()
 }
 
 pub fn day12b(source: Option<String>) -> i64 {
