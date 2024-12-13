@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::{collections::{HashMap, HashSet}};
 
 use crate::parsing::read_lines;
 
@@ -6,6 +6,7 @@ type Color = char;
 type Coords = (usize, usize);
 type Map = Vec<Vec<Color>>;
 type Adjacency = HashSet<(Coords, Coords)>;
+type Region = HashSet<Coords>;
 
 fn make_map(input: &Vec<String>) -> Map {
     let mut result = Map::new();
@@ -17,6 +18,49 @@ fn make_map(input: &Vec<String>) -> Map {
 
 fn at(map: &Map, (x, y): Coords) -> Color {
     map[y][x]
+}
+
+const NO_COLOR: Color = '.';
+
+fn xat(map: &Map, (x, y): (i32, i32)) -> Color {
+    if let Ok(x) = usize::try_from(x) {
+        if let Ok(y) = usize::try_from(y) {
+            if y >= map.len() { NO_COLOR }
+            else if x >= map[y].len() { NO_COLOR }
+            else { map[y][x] }
+        } else { NO_COLOR }
+    } else { NO_COLOR }
+}
+
+fn corners(map: &Map, (x, y): (i32, i32)) -> usize {
+    let center = xat(map, (x, y));
+    let mut result = 0;
+    let (n, ne, e, se, s, sw, w, nw) = (
+        xat(map, (x, y-1)) == center,
+        xat(map, (x+1, y-1)) == center,
+        xat(map, (x+1, y)) == center,
+        xat(map, (x+1, y+1)) == center,
+        xat(map, (x, y+1)) == center,
+        xat(map, (x-1, y+1)) == center,
+        xat(map, (x-1, y)) == center,
+        xat(map, (x-1, y-1)) == center,
+    );
+    // Inner corners
+    if !ne && n && e { result += 1; }
+    if !se && s && e { result += 1; }
+    if !sw && s && w { result += 1; }
+    if !nw && n && w { result += 1; }
+    // Outer corners
+    if !ne && !n && !e { result += 1; }
+    if !se && !s && !e { result += 1; }
+    if !sw && !s && !w { result += 1; }
+    if !nw && !n && !w { result += 1; }
+    // Caddy corners
+    if ne && !n && !e { result += 1; }
+    if se && !s && !e { result += 1; }
+    if sw && !s && !w { result += 1; }
+    if nw && !n && !w { result += 1; }
+    result
 }
 
 #[allow(dead_code)]
@@ -95,7 +139,7 @@ fn all_of(map: &Map, color: Color) -> HashSet<Coords> {
     result
 }
 
-fn reachable(start: &Coords, adjacency: &Adjacency) -> HashSet<Coords> {
+fn reachable(start: &Coords, adjacency: &Adjacency) -> Region {
     let successors = make_successors(&adjacency);
     // Simple breadth-first search of the adjacency graph.
     let mut worklist: Vec<Coords> = vec![*start];
@@ -114,11 +158,11 @@ fn reachable(start: &Coords, adjacency: &Adjacency) -> HashSet<Coords> {
     visited
 }
 
-fn make_region(map: &Map, start: &Coords) -> HashSet<Coords> {
+fn make_region(map: &Map, start: &Coords) -> Region {
     reachable(start, &make_adjacency(map, AdjacencyOpt::SameColor))
 }
 
-fn make_regions(map: &Map) -> Vec<HashSet<Coords>> {
+fn make_regions(map: &Map) -> Vec<Region> {
     let mut consumed: HashSet<Coords> = HashSet::new();
     let mut result = Vec::new();
     for (y, row) in map.iter().enumerate() {
@@ -139,7 +183,7 @@ fn make_regions(map: &Map) -> Vec<HashSet<Coords>> {
     result
 }
 
-fn score_region(map: &Map, region: &HashSet<Coords>) -> i64 {
+fn score_region(map: &Map, region: &Region) -> i64 {
     let mut score = 0;
     let size = region.len();
     let same_color_neighbors = make_successors(&make_adjacency(map, AdjacencyOpt::SameColor));
@@ -154,6 +198,23 @@ fn score_region(map: &Map, region: &HashSet<Coords>) -> i64 {
     score.try_into().unwrap()
 }
 
+fn count_sides(map: &Map, region: &Region) -> usize {
+    // We count sides by counting corners.
+    let mut count = 0;
+    for (x, y) in region {
+        let x: i32 = *x as i32;
+        let y: i32 = *y as i32;
+        count += corners(map, (x, y))
+    }
+    count
+}
+
+fn score_region_b(map: &Map, region: &Region) -> i64 {
+    let size = region.len();
+    let num_sides = count_sides(map, region);
+    (size * num_sides).try_into().unwrap()
+}
+
 pub fn day12(source: Option<String>) -> i64 {
     let lines = read_lines(source);
     let map = make_map(&lines);
@@ -162,7 +223,10 @@ pub fn day12(source: Option<String>) -> i64 {
 }
 
 pub fn day12b(source: Option<String>) -> i64 {
-    day12(source)
+    let lines = read_lines(source);
+    let map = make_map(&lines);
+    let regions = make_regions(&map);
+    regions.iter().map(|r| score_region_b(&map, r)).sum()
 }
 
 #[cfg(test)]
@@ -184,14 +248,13 @@ mod tests {
 
     #[test]
     fn test_example_b() {
-        assert_eq!(day12(Some("data/day12_example1.txt".to_string())), 140);
-        assert_eq!(day12(Some("data/day12_example2.txt".to_string())), 772);
-        assert_eq!(day12(Some("data/day12_example3.txt".to_string())), 1930);
+        assert_eq!(day12b(Some("data/day12_example1.txt".to_string())), 80);
+        assert_eq!(day12b(Some("data/day12_example3.txt".to_string())), 1206);
     }
 
     #[test]
     #[ignore = "requires input not in repository"]
     fn test_test_b() {
-        assert_eq!(day12b(Some("inputs/day12_test.txt".to_string())), 1086);
+        assert_eq!(day12b(Some("inputs/day12_test.txt".to_string())), 897702);
     }
 }
