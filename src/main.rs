@@ -5,6 +5,7 @@ mod day10;
 mod day11;
 mod day12;
 mod day13;
+mod day14;
 mod day2;
 mod day3;
 mod day4;
@@ -47,6 +48,9 @@ fn main() {
                 "day12b" => day12::day12b(None),
                 "day13" => day13::day13(None),
                 "day13b" => day13::day13b(None),
+                "day14" => day14::day14(None),
+                "day14_small" => day14::day14_generic(None, 11, 7, 100),
+                "day14b" => day14::day14b(None),
                 _ => panic!("Skipping unknown test {}", arg),
             };
             println!("{} output: {}", arg, result)
