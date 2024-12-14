@@ -25,8 +25,7 @@ const NO_COLOR: Color = '.';
 fn xat(map: &Map, (x, y): (i32, i32)) -> Color {
     if let Ok(x) = usize::try_from(x) {
         if let Ok(y) = usize::try_from(y) {
-            if y >= map.len() { NO_COLOR }
-            else if x >= map[y].len() { NO_COLOR }
+            if y >= map.len() || x >= map[y].len() { NO_COLOR }
             else { map[y][x] }
         } else { NO_COLOR }
     } else { NO_COLOR }
@@ -140,7 +139,7 @@ fn all_of(map: &Map, color: Color) -> HashSet<Coords> {
 }
 
 fn reachable(start: &Coords, adjacency: &Adjacency) -> Region {
-    let successors = make_successors(&adjacency);
+    let successors = make_successors(adjacency);
     // Simple breadth-first search of the adjacency graph.
     let mut worklist: Vec<Coords> = vec![*start];
     let mut visited: HashSet<Coords> = HashSet::new();
