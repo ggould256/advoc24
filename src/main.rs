@@ -4,6 +4,7 @@ mod day1;
 mod day10;
 mod day11;
 mod day12;
+mod day13;
 mod day2;
 mod day3;
 mod day4;
@@ -44,6 +45,8 @@ fn main() {
                 "day11b" => day11::day11b(None),
                 "day12" => day12::day12(None),
                 "day12b" => day12::day12b(None),
+                "day13" => day13::day13(None),
+                "day13b" => day13::day13b(None),
                 _ => panic!("Skipping unknown test {}", arg),
             };
             println!("{} output: {}", arg, result)

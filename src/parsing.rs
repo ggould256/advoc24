@@ -1,7 +1,24 @@
+use std::collections::HashMap;
 use std::fs::File;
 use std::io::BufRead;
 use std::io::BufReader;
 use std::io::Read;
+
+use regex::Regex;
+
+pub fn read_regex_records(source: Option<String>, record_regex: Regex) -> Vec<Vec<String>> {
+    let input = read_one_string(source);
+    let mut result = Vec::new();
+    for record_capture in record_regex.captures_iter(input.as_str()) {
+        let mut fields: Vec<String> = Vec::new();
+        for sub_match in record_capture.iter() {
+            let Some(sub_match) = sub_match else { continue };
+            fields.push(sub_match.as_str().to_string());
+        }
+        result.push(fields);
+    }
+    result
+}
 
 pub fn read_one_string(source: Option<String>) -> String {
     match source {
