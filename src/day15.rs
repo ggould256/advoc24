@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use crate::parsing::read_lines;
 use nalgebra::Vector2;
 
@@ -131,23 +133,63 @@ impl Board {
         result
     }
 
-    pub fn apply_move(&mut self, m: Direction) {
+    pub fn get_move_zone(&self, m: Direction) -> HashSet<Xy> {
+        // Repeatedly:
+        //  * Identify things that must move (move zone)
+        //  * Identify where they must go (frontier)
+        //  * For everything in the frontier,
+        //     * If it's empty, skip it.
+        //     * If it's a wall, give up, nothing moves.
+        //     * Add it to the move zone.
+        //     * If it's a crate, add its partner too.
+        let mut move_frontier = HashSet::<Xy>::new();
+        let mut move_zone = HashSet::<Xy>::new();
         let offset = m.to_offset();
-        let mut move_size = 1;
-        while [BoardContent::Crate, BoardContent::BoxLeft, BoardContent::BoxRight].contains(
-            &self.at(self.robot_location + offset * move_size)) {
-            move_size += 1;
-        }
-        if self.at(self.robot_location + offset * move_size) == BoardContent::Empty {
-            for i in 0..move_size {
-                let f = self.robot_location + (move_size - i - 1) * offset;
-                let t = self.robot_location + (move_size - i) * offset;
-                self.set_at(t, self.at(f));
+        move_frontier.insert(self.robot_location);
+        while !move_frontier.is_empty() {
+            move_zone.extend(move_frontier.iter());
+            let mut new_frontier: HashSet<Xy> = move_zone.iter().map(|xy| xy + offset).collect();
+            for &xy in move_frontier.clone().iter() {
+                match self.at(xy) {
+                    BoardContent::BoxLeft => {
+                        new_frontier.insert(xy + Xy::new(1, 0));
+                    }
+                    BoardContent::BoxRight => {
+                        new_frontier.insert(xy + Xy::new(-1, 0));
+                    }
+                    BoardContent::Wall => {
+                        return HashSet::new();
+                    }
+                    _ => {}
+                }
             }
-            self.set_at(self.robot_location, BoardContent::Empty);
-            self.robot_location += offset;
+            println!("New frontier is {:?}", new_frontier);
+            println!("Old frontier is {:?}", move_frontier);
+            move_frontier = new_frontier
+                .difference(&move_zone).cloned()
+                .filter(|&xy| self.at(xy) != BoardContent::Empty)
+                .collect();
+            println!("Revised frontier is {:?}", move_frontier);
         }
-        assert!(self.at(self.robot_location) == BoardContent::Robot);
+        move_zone
+    }
+
+    fn moved(&self, m: Direction) -> Board {
+        let zone = self.get_move_zone(m);
+        if zone.is_empty() { return self.clone() }
+        let mut new_board = self.clone();
+        for &xy in zone.iter() {
+            new_board.set_at(xy, BoardContent::Empty);
+        }
+        for &xy in zone.iter() {
+            new_board.set_at(xy + m.to_offset(), self.at(xy));
+        }
+        new_board.robot_location += m.to_offset();
+        new_board
+    }
+
+    pub fn apply_move(&mut self, m: Direction) {
+        *self = self.moved(m);
     }
 }
 
@@ -198,7 +240,18 @@ mod tests {
     #[test]
     #[ignore = "requires input not in repository"]
     fn test_test() {
-        assert_eq!(day15(Some("inputs/day15_test.txt".to_string())), 222062148);
+        assert_eq!(day15(Some("inputs/day15_test.txt".to_string())), 1495147);
+    }
+
+    #[test]
+    fn test_example_b() {
+        assert_eq!(day15b(Some("data/day15_example.txt".to_string())), 9021);
+    }
+
+    #[test]
+    #[ignore = "requires input not in repository"]
+    fn test_test_b() {
+        assert_eq!(day15b(Some("inputs/day15_test.txt".to_string())), 1524905);
     }
 
     // B cannot be tested.
