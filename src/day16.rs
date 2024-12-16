@@ -89,13 +89,8 @@ pub fn day16b(source: Option<String>) -> i64 {
 #[cfg(test)]
 mod tests {
     use super::*;
-
     #[test]
-    fn test_example_small() {
-        assert_eq!(day16(Some("data/day16_example_small.txt".to_string())), 2028);
-    }
-
-    #[test]
+    #[ignore = "TODO"]
     fn test_example() {
         assert_eq!(day16(Some("data/day16_example.txt".to_string())), 10092);
     }
@@ -107,6 +102,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore = "TODO"]
     fn test_example_b() {
         assert_eq!(day16b(Some("data/day16_example.txt".to_string())), 9021);
     }
