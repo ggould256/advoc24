@@ -1,9 +1,9 @@
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 use crate::parsing::read_lines;
-use crate::grid_board::{self, Board, Direction, Xy};
+use crate::grid_board::{self, Board, Direction, Scalar, Xy};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 enum BoardContent {
     Wall, Empty
 }
@@ -29,10 +29,18 @@ impl ToString for BoardContent {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Hash)]
 struct State {
     position: Xy,
     facing: Direction
+}
+
+impl Ord for State {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.position[0].cmp(&other.position[0])
+            .then(self.position[1].cmp(&other.position[1]))
+            .then(self.facing.cmp(&other.facing))
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -62,6 +70,26 @@ impl Puzzle {
         State{position: self.start, facing: self.start_direction}
     }
 
+    // Next states, with associated costs.
+    pub fn next_states(&self, state: &State) -> Vec<(State, Scalar)> {
+        let next = [
+            (State{position:state.position, facing:state.facing.cw()}, 1000),
+            (State{position:state.position, facing:state.facing.ccw()}, 1000),
+        ];
+        let mut nexts = Vec::from(next);
+        if self.board.at(state.position + state.facing.to_offset()) == BoardContent::Empty {
+            nexts.push(
+                (State{position:state.position + state.facing.to_offset(), facing:state.facing},
+                 1));
+        }
+        nexts
+    }
+
+    pub fn cost_heuristic(&self, state: State) -> Scalar {
+        // TODO include rotation error.
+        (state.position - self.end).sum()
+    }
+
     pub fn final_states(&self) -> HashSet<State> {
         HashSet::from_iter(Direction::ALL.iter().map(|&d| State{position: self.start, facing: d}))
     }
@@ -74,6 +102,23 @@ impl Puzzle {
     // Find a shortest path from `start` to any `end`.
     pub fn pathfind_from_to(&self, start: &State, end: &HashSet<State>) -> Vec<State> {
         Vec::new()
+    }
+}
+
+struct Pathfinder {
+    puzzle: Puzzle,
+    successors: HashMap<State, HashSet<State>>,
+    cost_remaining: HashMap<State, Scalar>,
+}
+
+impl Pathfinder {
+    fn backtrack(&mut self) {
+
+    }
+
+    pub fn astar() -> (Vec<State>, Scalar) {
+        // TODO
+        (Vec::new(), 0)
     }
 }
 

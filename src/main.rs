@@ -7,7 +7,8 @@ mod day12;
 mod day13;
 mod day14;
 mod day15;
-mod day16;
+//mod day16;
+mod day17;
 mod day2;
 mod day3;
 mod day4;
@@ -17,7 +18,7 @@ mod day7;
 mod day8;
 mod day9;
 mod parsing;
-mod grid_board;
+//mod grid_board;
 
 fn main() {
     if env::args().len() == 1 {
@@ -56,8 +57,10 @@ fn main() {
                 "day14b" => day14::day14b(None),
                 "day15" => day15::day15(None),
                 "day15b" => day15::day15b(None),
-                "day16" => day16::day16(None),
-                "day16b" => day16::day16b(None),
+                //"day16" => day16::day16(None),
+                //"day16b" => day16::day16b(None),
+                "day17" => { println!("{}", day17::day17(None)); 0 },
+                "day17b" => { println!("{}", day17::day17b(None)); 0 },
                 _ => panic!("Skipping unknown test {}", arg),
             };
             println!("{} output: {}", arg, result)

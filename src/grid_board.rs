@@ -4,7 +4,7 @@ use nalgebra::Vector2;
 pub type Scalar = i64;
 pub type Xy = Vector2<Scalar>;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Direction {
     North, East, South, West
 }
@@ -39,6 +39,24 @@ impl Direction {
             '<' => Some(Direction::West),
             _ => None,
         }.unwrap()
+    }
+
+    pub fn cw(&self) -> Direction {
+        match self {
+            Direction::North => Direction::East,
+            Direction::East => Direction::South,
+            Direction::South => Direction::West,
+            Direction::West => Direction::North,
+        }        
+    }
+
+    pub fn ccw(&self) -> Direction {
+        match self {
+            Direction::North => Direction::West,
+            Direction::East => Direction::North,
+            Direction::South => Direction::East,
+            Direction::West => Direction::South,
+        }        
     }
 }
 
