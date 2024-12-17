@@ -118,6 +118,17 @@ impl VmState {
         }    
         vm_state.output_so_far
     }
+
+    fn expect_output(&self, expected_output: &Vec<RegVal>) -> bool {
+        let mut vm_state = self.clone();
+        while !vm_state.halted {
+            vm_state = vm_state.advance_state();
+            if !expected_output.starts_with(&vm_state.output_so_far) {
+                return false;
+            }
+        }
+        true
+    }
 }
 
 
@@ -156,8 +167,11 @@ pub fn day17b(source: Option<String>) -> i64 {
     loop {
         let mut new_vm = vm_state.clone();
         new_vm.registers[0] = candidate;
-        if new_vm.run_until_halt(vm_state.program.len()) == program_as_regval {
+        if vm_state.expect_output(&program_as_regval) {
             return candidate as i64;
+        }
+        if candidate & 100000 == 0 {
+            println!("Checking candidate value {}: {:?}", candidate, vm_state.run_until_halt(16))
         }
         candidate += 1;
     }
@@ -180,13 +194,13 @@ mod tests {
     #[test]
     #[ignore = "TODO"]
     fn test_example_b() {
-        assert_eq!(day17b(Some("data/day17_example.txt".to_string())), "");
+        assert_eq!(day17b(Some("data/day17_example_b.txt".to_string())), 117440);
     }
 
     #[test]
     #[ignore = "requires input not in repository"]
     fn test_test_b() {
-        assert_eq!(day17b(Some("inputs/day17_test.txt".to_string())), "");
+        assert_eq!(day17b(Some("inputs/day17_test.txt".to_string())), 0);
     }
 
     // B cannot be tested.
