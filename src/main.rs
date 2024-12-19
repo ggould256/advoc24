@@ -19,6 +19,7 @@ mod day8;
 mod day9;
 mod parsing;
 //mod grid_board;
+mod astar;
 
 fn main() {
     if env::args().len() == 1 {
